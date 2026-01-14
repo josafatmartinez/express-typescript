@@ -1,16 +1,32 @@
 import { randomUUID } from 'crypto';
 import { db } from '@/db/client';
+import { env } from '@/config/env';
 
 export async function migrate() {
-  await db.schema
-    .createTable('users')
-    .ifNotExists()
-    .addColumn('id', 'integer', (col) => col.primaryKey().autoIncrement())
-    .addColumn('uuid', 'text', (col) => col.notNull().unique())
-    .addColumn('name', 'text', (col) => col.notNull())
-    .addColumn('email', 'text', (col) => col.notNull().unique())
-    .addColumn('created_at', 'text', (col) => col.notNull())
-    .execute();
+  const isPostgres = Boolean(env.POSTGRES_URL);
+
+  // Schema creation per dialect to avoid auto_increment issues in Postgres.
+  if (isPostgres) {
+    await db.schema
+      .createTable('users')
+      .ifNotExists()
+      .addColumn('id', 'serial', (col) => col.primaryKey())
+      .addColumn('uuid', 'text', (col) => col.notNull().unique())
+      .addColumn('name', 'text', (col) => col.notNull())
+      .addColumn('email', 'text', (col) => col.notNull().unique())
+      .addColumn('created_at', 'text', (col) => col.notNull())
+      .execute();
+  } else {
+    await db.schema
+      .createTable('users')
+      .ifNotExists()
+      .addColumn('id', 'integer', (col) => col.primaryKey().autoIncrement())
+      .addColumn('uuid', 'text', (col) => col.notNull().unique())
+      .addColumn('name', 'text', (col) => col.notNull())
+      .addColumn('email', 'text', (col) => col.notNull().unique())
+      .addColumn('created_at', 'text', (col) => col.notNull())
+      .execute();
+  }
 
   // Si la tabla existe sin uuid (versiones previas), intenta agregarla y poblarla.
   try {
