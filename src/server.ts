@@ -7,7 +7,9 @@ const app = buildApp();
 
 async function start() {
   try {
-    await migrate();
+    if (env.MIGRATE_ON_START) {
+      await migrate();
+    }
     app.listen(env.PORT, () => {
       logger.info(`API up on http://localhost:${env.PORT}`);
     });
