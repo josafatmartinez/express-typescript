@@ -53,14 +53,29 @@ export const openApiSpec = {
       get: {
         summary: 'List users',
         tags: ['Users'],
+        parameters: [
+          {
+            name: 'page',
+            in: 'query',
+            required: false,
+            schema: { type: 'integer', minimum: 1, default: 1 },
+            description: 'Page number (1-based)',
+          },
+          {
+            name: 'pageSize',
+            in: 'query',
+            required: false,
+            schema: { type: 'integer', minimum: 1, maximum: 100, default: 10 },
+            description: 'Items per page (max 100)',
+          },
+        ],
         responses: {
           200: {
-            description: 'Array of users',
+            description: 'Paginated users',
             content: {
               'application/json': {
                 schema: {
-                  type: 'array',
-                  items: { $ref: '#/components/schemas/User' },
+                  $ref: '#/components/schemas/PaginatedUsers',
                 },
               },
             },
@@ -191,6 +206,19 @@ export const openApiSpec = {
           email: { type: 'string', format: 'email', example: 'grace@example.com' },
         },
         description: 'At least one field required',
+      },
+      PaginatedUsers: {
+        type: 'object',
+        properties: {
+          items: {
+            type: 'array',
+            items: { $ref: '#/components/schemas/User' },
+          },
+          page: { type: 'integer', example: 1 },
+          pageSize: { type: 'integer', example: 10 },
+          total: { type: 'integer', example: 42 },
+          totalPages: { type: 'integer', example: 5 },
+        },
       },
     },
     parameters: {
