@@ -9,7 +9,7 @@
     "start": "node dist/server.js",
     "lint": "eslint .",
     "format": "prettier -w .",
-    "prepare": "husky"
+    "prepare": "if [ -x ./node_modules/.bin/husky ]; then husky install; else echo \"skip husky (not installed)\"; fi"
   },
   "keywords": [],
   "author": "",
