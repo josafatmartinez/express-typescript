@@ -1,6 +1,11 @@
 # Express TypeScript API
 
-Minimal REST API boilerplate built with Express 5 + TypeScript. Includes health check, users CRUD, request validation (Zod), logging (Pino), Swagger UI, and database layer via Kysely with pluggable backends (SQLite by default, Postgres via env).
+![Node](https://img.shields.io/badge/node-%3E%3D18-brightgreen?logo=node.js&logoColor=white)
+![TypeScript](https://img.shields.io/badge/ts-5.x-3178c6?logo=typescript&logoColor=white)
+![Express](https://img.shields.io/badge/express-5-black?logo=express&logoColor=white)
+![DB](https://img.shields.io/badge/db-sqlite%20%7C%20postgres-blue)
+
+Minimal REST API boilerplate built with Express 5 + TypeScript. Includes health check, users CRUD, request validation (Zod), logging (Pino), Swagger UI, and Kysely with pluggable backends (SQLite by default, Postgres via env).
 
 ## Quick start
 
@@ -13,8 +18,7 @@ npm run lint           # eslint
 npm run format         # prettier
 ```
 
-API base: `/api`.
-Docs: `GET /api/docs`.
+API base: `/api` • Docs: `GET /api/docs`.
 
 ## Environment
 
@@ -31,9 +35,12 @@ POSTGRES_URL=postgres://user:password@localhost:5432/mydb
 
 ## Database selection (SQLite ↔ Postgres)
 
-- Default: SQLite file `data/app.db` (auto-created). Uses WAL and busy_timeout to reduce locking.
-- Postgres: set `POSTGRES_URL` and the app will use `pg` + `PostgresDialect`.
-- Same Kysely queries used for both; `migrate()` adapts id column per dialect (SQLite autoincrement vs Postgres serial).
+| Mode     | How to enable                   | Notes                                           |
+| -------- | ------------------------------- | ----------------------------------------------- |
+| SQLite   | No `POSTGRES_URL` set (default) | File at `data/app.db`, WAL + busy_timeout set   |
+| Postgres | Set `POSTGRES_URL` in `.env`    | Uses `pg` + `PostgresDialect`; same Kysely APIs |
+
+`migrate()` adapts the `id` column per dialect (SQLite autoincrement vs Postgres serial) and keeps UUID + unique email.
 
 ## Running Postgres in Docker (example)
 
@@ -48,13 +55,13 @@ docker run -d --name pg \
 
 Then set `POSTGRES_URL=postgres://app:secret@localhost:5432/appdb` and start the app. If you already have a container named `pg`, reuse (`docker start pg`) or remove/rename it.
 
-## Routes
+## Routes (main)
 
 - `GET /api/v1/health` – health check.
 - Users (`/api/v1/users`): list, get (by id or uuid), create, update, delete. Request validation via Zod; UUID generated on create.
 - Swagger UI at `/api/docs`; spec in `src/config/openapi.ts`.
 
-## Project structure
+## Project structure (visual map)
 
 - `src/app.ts` – Express setup (helmet, compression, cors, pino-http).
 - `src/server.ts` – boot + migrate before listen.
