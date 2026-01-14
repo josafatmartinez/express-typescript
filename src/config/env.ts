@@ -6,7 +6,6 @@ const EnvSchema = z.object({
   PORT: z.coerce.number().int().positive().default(3000),
   LOG_LEVEL: z.string().default('info'),
   CORS_ORIGIN: z.string().default('*'),
-  MIGRATE_ON_START: z.coerce.boolean().default(true),
   POSTGRES_URL: z.url().optional(),
 });
 
