@@ -8,7 +8,8 @@
     "build": "tsup src/server.ts --format cjs --dts --clean --minify && javascript-obfuscator dist/server.js --output dist/server.js --compact true --control-flow-flattening true --self-defending true",
     "start": "node dist/server.js",
     "lint": "eslint .",
-    "format": "prettier -w ."
+    "format": "prettier -w .",
+    "prepare": "husky"
   },
   "keywords": [],
   "author": "",
@@ -37,12 +38,22 @@
     "@types/node": "^25.0.8",
     "eslint": "^9.39.2",
     "eslint-config-prettier": "^10.1.8",
+    "husky": "^9.1.7",
     "javascript-obfuscator": "^5.1.0",
+    "lint-staged": "^16.2.7",
     "nodemon": "^3.1.11",
     "prettier": "^3.7.4",
     "tsup": "^8.5.1",
     "tsx": "^4.21.0",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.53.0"
+  },
+  "lint-staged": {
+    "*.{ts,js,json,md}": [
+      "prettier --write"
+    ],
+    "*.{ts,js}": [
+      "eslint --fix"
+    ]
   }
 }
