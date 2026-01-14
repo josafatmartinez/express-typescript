@@ -8,9 +8,26 @@ type UpdateUserInput = {
   name?: string;
   email?: string;
 };
+type Pagination = {
+  page: number;
+  pageSize: number;
+};
 
-export async function listUsers() {
-  return db.selectFrom('users').selectAll().orderBy('id').execute();
+export async function listUsers({ page, pageSize }: Pagination) {
+  const offset = (page - 1) * pageSize;
+
+  const [items, totalRow] = await Promise.all([
+    db.selectFrom('users').selectAll().orderBy('id').limit(pageSize).offset(offset).execute(),
+    db
+      .selectFrom('users')
+      .select((eb) => eb.fn.countAll().as('count'))
+      .executeTakeFirst(),
+  ]);
+
+  const total = totalRow?.count ? Number(totalRow.count) : 0;
+  const totalPages = total === 0 ? 1 : Math.ceil(total / pageSize);
+
+  return { items, page, pageSize, total, totalPages };
 }
 
 export async function getUserById(id: number) {

@@ -21,11 +21,16 @@ const createSchema = z.object({
 const updateSchema = createSchema.partial().refine((data) => Object.keys(data).length > 0, {
   message: 'At least one field is required',
 });
+const listSchema = z.object({
+  page: z.coerce.number().int().positive().default(1),
+  pageSize: z.coerce.number().int().positive().max(100).default(10),
+});
 
 router.get('/', async (_req, res, next) => {
   try {
-    const users = await listUsers();
-    res.json(users);
+    const { page, pageSize } = listSchema.parse(_req.query);
+    const result = await listUsers({ page, pageSize });
+    res.json(result);
   } catch (err) {
     next(err);
   }
